@@ -4,6 +4,7 @@ from data import get_data
 from models.RBM.RBM_synthetic_generator import Pre_trainer as Pre_trainer_synthetic_generator
 from matplotlib import pyplot as plt
 import numpy as np
+import torch
 
 def reform_mnist():
 	synthetic_images = np.reshape(synthetic_images, (-1, 28, 28))
@@ -26,9 +27,11 @@ def reform_mnist():
 
 def RBM_synthetic_generation_example(labels, images):
 	images_reshaped = images.reshape((len(images), -1))
+	images_reshaped = (images_reshaped - np.min(images_reshaped))/(np.max(images_reshaped) - np.min(images_reshaped))
 	rbm = Pre_trainer_synthetic_generator(n_visible=784, n_hidden=10, epochs=15, optim='adam')
 	rbm.train_rbm(images_reshaped)
 	synthetic_images, hidden_features = rbm.get_synthetic_data(images_reshaped)
+	torch.save()
 	
 	
 if __name__ == '__main__':

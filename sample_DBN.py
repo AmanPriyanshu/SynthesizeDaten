@@ -6,11 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from sys import getsizeof
 
-def DBN_synthetic_generation_example(labels, images):
-	images_reshaped = images.reshape((len(images), -1))
-	dbn = Pre_trainer_synthetic_generator(n_visible=784, hidden_array=[400, 256, 100, 49, 10], epochs=15, optim='adm')
-	dbn.train_dbn(images_reshaped)
-	synthetic_images, hidden_features = dbn.get_synthetic_data(images_reshaped)
+def reform_mnist():
 	synthetic_images = np.reshape(synthetic_images, (-1, 28, 28))
 	hidden_features = np.reshape(hidden_features, (-1, 5, 2))
 	plt.cla()
@@ -29,6 +25,13 @@ def DBN_synthetic_generation_example(labels, images):
 	fig.tight_layout()
 	plt.savefig('DBN_synthetic_generations.png')
 
+def DBN_synthetic_generation_example(labels, images):
+	images_reshaped = images.reshape((len(images), -1))
+	images_reshaped = (images_reshaped - np.min(images_reshaped))/(np.max(images_reshaped) - np.min(images_reshaped))
+	dbn = Pre_trainer_synthetic_generator(n_visible=784, hidden_array=[400, 256, 100, 49, 10], epochs=15, optim='adm')
+	dbn.train_dbn(images_reshaped)
+	synthetic_images, hidden_features = dbn.get_synthetic_data(images_reshaped)
+	
 if __name__ == '__main__':
 	data = get_data("./data/mnist.csv")
 	DBN_synthetic_generation_example(data['labels'], data['images'])
