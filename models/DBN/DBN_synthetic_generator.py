@@ -36,37 +36,32 @@ class Pre_trainer:
 	def get_hidden(self, x):
 		hidden_features = x
 		for model in self.model_array:
-			for idx, batch_x in enumerate([hidden_features[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(hidden_features)//self.batch_size)]):
-				features = []
-				for _ in range(self.k):
-					_, v = self.sample_h(batch_x, model)
-					features.append(v)
-				features = np.mean(np.stack(features), 0)
-				if idx==0:
-					hidden_features = features
-				else:
-					hidden_features = np.concatenate((hidden_features, features), 0)
+			features = []
+			for _ in range(self.k):
+				_, v = self.sample_h(hidden_features, model)
+				features.append(v)
+			features = np.mean(np.stack(features), 0)
+			hidden_features = features
 		return hidden_features
 
 	def get_visible(self, y):
 		hidden_features = y
 		for model in self.model_array[::-1]:
-			for idx, batch_x in enumerate([hidden_features[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(hidden_features)//self.batch_size)]):
-				features = []
-				for _ in range(self.k):
-					_, v = self.sample_v(batch_x, model)
-					features.append(v)
-				features = np.mean(np.stack(features), 0)
-				if idx==0:
-					hidden_features = features
-				else:
-					hidden_features = np.concatenate((hidden_features, features), 0)
+			features = []
+			for _ in range(self.k):
+				_, v = self.sample_v(hidden_features, model)
+				features.append(v)
+			features = np.mean(np.stack(features), 0)
+			hidden_features = features
 		return hidden_features
 
 	def get_synthetic_data(self, x):
 		x = x.astype(np.float32)
-		x = (x - np.min(x))/(np.max(x) - np.min(x) + self.epsilon)
-		x = [x[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(x)//self.batch_size)]
+		x_orig = (x - np.min(x))/(np.max(x) - np.min(x) + self.epsilon)
+		x = [x_orig[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(x_orig)//self.batch_size)]
+		if len(x_orig)%self.batch_size != 0:
+			x.append(x_orig[-(len(x_orig)%self.batch_size):])
+		del x_orig
 
 		for batch_idx, batch_x in tqdm(enumerate(x), desc="Generating", total=len(x)):
 			synthetic_hidden_features_batch = self.get_hidden(batch_x)

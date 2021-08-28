@@ -43,8 +43,11 @@ class Pre_trainer:
 
 	def get_synthetic_data(self, x):
 		x = x.astype(np.float32)
-		x = (x - np.min(x))/(np.max(x) - np.min(x) + self.epsilon)
-		x = [x[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(x)//self.batch_size)]
+		x_orig = (x - np.min(x))/(np.max(x) - np.min(x) + self.epsilon)
+		x = [x_orig[index*self.batch_size:(index+1)*self.batch_size] for index in range(len(x_orig)//self.batch_size)]
+		if len(x_orig)%self.batch_size != 0:
+			x.append(x_orig[-(len(x_orig)%self.batch_size):])
+		del x_orig
 
 		for batch_idx, batch_x in tqdm(enumerate(x), desc="Generating", total=len(x)):
 			v0 = batch_x
