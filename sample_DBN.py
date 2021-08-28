@@ -57,13 +57,13 @@ def generate_class_wise(path):
 			cv2.imwrite(save_path, image*255)
 
 def generate_complete_dataset(path):
-	output_dir = path.replace("data", "synthetic_data")
+	output_dir = path.replace("data", "synthetic_data/DBN")
 	if not os.path.exists(output_dir):
 		os.mkdir(output_dir)
 	dataset = None
 	classes_lens = {}
 	for file_path in [path+i for i in os.listdir(path)]:
-		output_path = file_path.replace("data", "synthetic_data")
+		output_path = file_path.replace("data", "synthetic_data/DBN")
 		if not os.path.exists(output_path):
 			os.mkdir(output_path)
 		data = get_data(file_path+"/")
