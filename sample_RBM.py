@@ -37,7 +37,7 @@ def reform_mnist(synthetic_images, hidden_features):
 def RBM_synthetic_generation_example(images):
 	images_reshaped = images.reshape((len(images), -1))
 	images_reshaped = (images_reshaped - np.min(images_reshaped))/(np.max(images_reshaped) - np.min(images_reshaped))
-	rbm = Pre_trainer_synthetic_generator(n_visible=images_reshaped.shape[1], n_hidden=324, epochs=30, optim='adm')
+	rbm = Pre_trainer_synthetic_generator(n_visible=images_reshaped.shape[1], n_hidden=400*3, epochs=300, optim='adm', k=20)
 	rbm.train_rbm(images_reshaped)
 	synthetic_images, hidden_features = rbm.get_synthetic_data(images_reshaped)
 	return synthetic_images.reshape(images.shape)
@@ -84,6 +84,6 @@ def generate_complete_dataset(path):
 
 	
 if __name__ == '__main__':
-	path = "./data/MNIST/"
+	path = "./data/CIFAR/"
 	generate_complete_dataset(path)
 	
